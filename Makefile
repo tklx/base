@@ -64,8 +64,13 @@ clean:
 $O/required.spec: plan/required
 	fab-plan-resolve --output=$O/required.spec plan/required
 
-$O/base.spec: plan/base
-	fab-plan-resolve --output=$O/base.spec plan/base
+$O/base.spec: $O/required.spec plan/base
+	fab-plan-resolve --output=$O/base-full.spec plan/base
+	awk '{print $$1}' $O/base-full.spec |sort > $O/base.tmp
+	awk '{print $$1}' $O/required.spec |sort > $O/required.tmp
+	sdiff --suppress-common-lines $O/base.tmp $O/required.tmp | \
+		awk '{print $$1}' | grep -v '>' > $O/base.spec
+	rm $O/base.tmp $O/required.tmp
 
 $O/repo: $O/required.spec $O/base.spec
 	mkdir -p $O/repo/pool/main
@@ -75,9 +80,8 @@ $O/repo: $O/required.spec $O/base.spec
 	repo-release `pwd`/$O/repo $(DEBOOTSTRAP_SUITE)
 
 $O/rootfs: $O/repo
-	bin/exclude_spec.py $O/base.spec $O/required.spec > $O/base-uniq.spec
 	bin/debootstrap.py $(FAB_ARCH) $(DEBOOTSTRAP_SUITE) \
-		$O/rootfs `pwd`/$O/repo $O/required.spec $O/base-uniq.spec
+		$O/rootfs `pwd`/$O/repo $O/required.spec $O/base.spec
 	fab-chroot $O/rootfs --script bin/cleanup.sh
 	fab-chroot $O/rootfs 'echo "do_initrd = Yes" > /etc/kernel-img.conf'
 
