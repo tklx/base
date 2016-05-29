@@ -1,0 +1,8 @@
+apt
+gpgv            /* needed to verify apt signatures */
+initramfs-tools
+locales         /* needed to prevent annoying error messages */
+
+/* non-essential packages needed for for bootstrapping */
+mawk            /* needed to provide awk to base-files */
+initscripts     /* needed to provide upstart / sysvinit */
