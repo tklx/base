@@ -28,132 +28,63 @@ DEBOOTSTRAP_SUITE ?= generic
 # build output path
 O ?= build
 
-STAMPS_DIR = $O/stamps
-
-all: $O/rootfs.tar.gz
-
-#clean
-define clean/body 
-	-rm -rf $O/*.spec $O/rootfs $O/rootfs.tar.gz $O/repo $(STAMPS_DIR)
-endef
-
-clean:
-	$(clean/pre)
-	$(clean/body)
-	$(clean/post)
-
-define help/body
+help:
 	@echo '=== Configurable variables'
 	@echo 'Resolution order:'
 	@echo '1) command line (highest precedence)'
-	@echo '2) product Makefile'
-	@echo '3) environment variable'
-	@echo '4) built-in default (lowest precedence)'
+	@echo '2) environment variable'
+	@echo '3) built-in default (lowest precedence)'
 	@echo
-	@echo '# Mandatory configuration variables:'
-	@echo '  FAB_PATH                   $(value FAB_PATH)'
+	@echo '# Mandatory configuration variables'
 	@echo '  RELEASE                    $(value RELEASE)'
+	@echo '  FAB_PATH                   $(value FAB_PATH)'
 	@echo
-	@echo '# Build context variables    [VALUE]'
+	@echo '# Build context variables'
+	@echo '  POOL                       $(value POOL)'
 	@echo '  FAB_ARCH                   $(value FAB_ARCH)'
-	@echo '  POOL                       $(value POOL)/'
 	@echo '  DEBOOTSTRAP_SUITE          $(value DEBOOTSTRAP_SUITE)'
 	@echo
-	@echo '# Product output variables   [VALUE]'
-	@echo '  O                          $(value O)/'
+	@echo '# Product output variables'
+	@echo '  O                          $(value O)'
 	@echo
 	@echo '=== Usage'
-	@echo '# remake target and the targets that depend on it'
-	@echo '$$ rm $(value STAMPS_DIR)/<target>; make <target>'
-	@echo
-	@echo '# build a target (default: rootfs.tar.gz)'
+	@echo 'Build a target'
 	@echo '$$ make [target] [O=path/to/build/dir]'
 	@echo
-	@echo '  clean          # clean all build targets'
-	@echo '  required.spec  # the spec of debootstrap REQUIRED_PACKAGES'
-	@echo '  base.spec      # the spec of debootstrap BASE_PACKAGES'
+	@echo '  clean'
+	@echo '  $(value O)/required.spec'
+	@echo '  $(value O)/base.spec'
+	@echo '  $(value O)/repo'
+	@echo '  $(value O)/rootfs'
+	@echo '  $(value O)/rootfs.tar.gz (default)'
 
-	@echo '  repo           # build temporary local repository for rootfs'
-	@echo '  rootfs         # build rootfs with debootstrap from repo'
-	@echo '  rootfs.tar.gz  # build tarball from rootfs'
-endef
+clean:
+	-rm -rf $O/*.spec $O/repo $O/rootfs $O/rootfs.tar.gz
 
-help:
-	$(help/pre)
-	$(help/body)
-	$(help/post)
-
-debug:
-	$(foreach v, $V, $(warning $v = $($v)))
-	@true
-
-#required.spec
-required.spec/deps ?= plan/required
-define required.spec/body
+$O/required.spec: plan/required
 	fab-plan-resolve --output=$O/required.spec plan/required
-endef
 
-#base.spec
-base.spec/deps ?= plan/base $(STAMPS_DIR)/required.spec
-define base.spec/body
+$O/base.spec: plan/base
 	fab-plan-resolve --output=$O/base.spec plan/base
-endef
 
-#repo
-repo/deps ?= $(STAMPS_DIR)/required.spec $(STAMPS_DIR)/base.spec 
-define repo/body
+$O/repo: $O/required.spec $O/base.spec
 	mkdir -p $O/repo/pool/main
 	cat $O/required.spec $O/base.spec | \
-		POOL_DIR=$(POOL) pool-get $O/repo/pool/main --strict --tree --input - 
-
+		POOL_DIR=$(POOL) pool-get $O/repo/pool/main -s -t --input -
 	repo-index $O/repo $(DEBOOTSTRAP_SUITE) main $(FAB_ARCH)
 	repo-release `pwd`/$O/repo $(DEBOOTSTRAP_SUITE)
-endef
 
-#rootfs
-rootfs/deps ?= $(STAMPS_DIR)/repo
-define rootfs/body
-	bin/exclude_spec.py $O/base.spec $O/required.spec > $O/base-excl-req.spec
-	bin/debootstrap.py $(FAB_ARCH) $(DEBOOTSTRAP_SUITE) $O/rootfs `pwd`/$O/repo $O/required.spec $O/base-excl-req.spec
-
+$O/rootfs: $O/repo
+	bin/exclude_spec.py $O/base.spec $O/required.spec > $O/base-uniq.spec
+	bin/debootstrap.py $(FAB_ARCH) $(DEBOOTSTRAP_SUITE) \
+		$O/rootfs `pwd`/$O/repo $O/required.spec $O/base-uniq.spec
 	fab-chroot $O/rootfs --script bin/cleanup.sh
 	fab-chroot $O/rootfs 'echo "do_initrd = Yes" > /etc/kernel-img.conf'
-endef
 
-$O/rootfs: $(rootfs/deps) $(rootfs/deps/extra)
-	$(rootfs/pre)
-	$(rootfs/body)
-	$(rootfs/post)
-
-rootfs: $O/rootfs
-
-#rootfs.tar.gz
-rootfs.tar.gz/deps ?= $(STAMPS_DIR)/rootfs
-define rootfs.tar.gz/body
+$O/rootfs.tar.gz: $O/rootfs
 	tar -C $O/rootfs -zcf $O/rootfs.tar.gz .
-endef
 
-$O/rootfs.tar.gz: $(rootfs.tar.gz/deps) $(rootfs.tar.gz/deps/extra)
-	$(rootfs.tar.gz/pre)
-	$(rootfs.tar.gz/body)
-	$(rootfs.tar.gz/post)
+all: $O/rootfs.tar.gz
 
-rootfs.tar.gz: $O/rootfs.tar.gz
-
-# construct target rules
-define _stamped_target
-$1: $(STAMPS_DIR)/$1
-
-$(STAMPS_DIR)/$1: $$($1/deps) $$($1/deps/extra)
-	@mkdir -p $(STAMPS_DIR)
-	$$($1/pre)
-	$$($1/body)
-	$$($1/post)
-	touch $$@
-endef
-
-STAMPED_TARGETS := required.spec base.spec repo rootfs
-$(foreach target,$(STAMPED_TARGETS),$(eval $(call _stamped_target,$(target))))
-
-.PHONY: clean $(STAMP_TARGETS)
+.PHONY: all clean help
 
