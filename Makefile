@@ -86,6 +86,11 @@ $O/rootfs: $O/repo
 		$O/rootfs `pwd`/$O/repo $O/required.spec $O/base.spec
 	fab-chroot $O/rootfs --script bin/cleanup.sh
 
+	$(foreach u,$(wildcard unit.d/*), \
+	  [ -d $(u)/overlay ] && fab-apply-overlay $(u)/overlay $O/rootfs; \
+	  [ -x $(u)/conf ] && fab-chroot $O/rootfs --script $(u)/conf; \
+	  )
+
 $O/rootfs.tar.gz: $O/rootfs
 	tar -C $O/rootfs -zcf $O/rootfs.tar.gz .
 
