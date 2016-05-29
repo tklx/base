@@ -85,7 +85,6 @@ $O/rootfs: $O/repo
 	bin/debootstrap.py $(FAB_ARCH) $(DEBOOTSTRAP_SUITE) \
 		$O/rootfs `pwd`/$O/repo $O/required.spec $O/base.spec
 	fab-chroot $O/rootfs --script bin/cleanup.sh
-	fab-chroot $O/rootfs 'echo "do_initrd = Yes" > /etc/kernel-img.conf'
 
 $O/rootfs.tar.gz: $O/rootfs
 	tar -C $O/rootfs -zcf $O/rootfs.tar.gz .
