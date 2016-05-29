@@ -8,9 +8,6 @@
 # Free Software Foundation; either version 3 of the License, or (at your
 # option) any later version.
 
-_self = $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
-BSP = $(shell dirname $(_self))
-
 ifndef FAB_PATH
 $(error FAB_PATH not defined - needed for default paths)
 endif
@@ -116,10 +113,10 @@ endef
 #bootstrap
 bootstrap/deps ?= $(STAMPS_DIR)/repo
 define bootstrap/body
-	$(BSP)/exclude_spec.py $O/base.spec $O/required.spec > $O/base-excl-req.spec
-	$(BSP)/debootstrap.py $(FAB_ARCH) $(DEBOOTSTRAP_SUITE) $O/bootstrap `pwd`/$O/repo $O/required.spec $O/base-excl-req.spec
+	bin/exclude_spec.py $O/base.spec $O/required.spec > $O/base-excl-req.spec
+	bin/debootstrap.py $(FAB_ARCH) $(DEBOOTSTRAP_SUITE) $O/bootstrap `pwd`/$O/repo $O/required.spec $O/base-excl-req.spec
 
-	fab-chroot $O/bootstrap --script $(BSP)/cleanup.sh
+	fab-chroot $O/bootstrap --script bin/cleanup.sh
 	fab-chroot $O/bootstrap 'echo "do_initrd = Yes" > /etc/kernel-img.conf'
 endef
 
