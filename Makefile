@@ -30,11 +30,11 @@ O ?= build
 
 STAMPS_DIR = $O/stamps
 
-all: $O/bootstrap.tar.gz
+all: $O/rootfs.tar.gz
 
 #clean
 define clean/body 
-	-rm -rf $O/*.spec $O/bootstrap $O/bootstrap.tar.gz $O/repo $(STAMPS_DIR)
+	-rm -rf $O/*.spec $O/rootfs $O/rootfs.tar.gz $O/repo $(STAMPS_DIR)
 endef
 
 clean:
@@ -66,16 +66,16 @@ define help/body
 	@echo '# remake target and the targets that depend on it'
 	@echo '$$ rm $(value STAMPS_DIR)/<target>; make <target>'
 	@echo
-	@echo '# build a target (default: bootstrap.tar.gz)'
+	@echo '# build a target (default: rootfs.tar.gz)'
 	@echo '$$ make [target] [O=path/to/build/dir]'
 	@echo
-	@echo '  clean            # clean all build targets'
-	@echo '  required.spec    # the spec of debootstrap REQUIRED_PACKAGES'
-	@echo '  base.spec        # the spec of debootstrap BASE_PACKAGES'
+	@echo '  clean          # clean all build targets'
+	@echo '  required.spec  # the spec of debootstrap REQUIRED_PACKAGES'
+	@echo '  base.spec      # the spec of debootstrap BASE_PACKAGES'
 
-	@echo '  repo             # build temporary local repository for debootstrap'
-	@echo '  bootstrap        # build bootstrap with debootstrap from repo'
-	@echo '  bootstrap.tar.gz # build tarball from bootstrap'
+	@echo '  repo           # build temporary local repository for rootfs'
+	@echo '  rootfs         # build rootfs with debootstrap from repo'
+	@echo '  rootfs.tar.gz  # build tarball from rootfs'
 endef
 
 help:
@@ -110,35 +110,35 @@ define repo/body
 	repo-release `pwd`/$O/repo $(DEBOOTSTRAP_SUITE)
 endef
 
-#bootstrap
-bootstrap/deps ?= $(STAMPS_DIR)/repo
-define bootstrap/body
+#rootfs
+rootfs/deps ?= $(STAMPS_DIR)/repo
+define rootfs/body
 	bin/exclude_spec.py $O/base.spec $O/required.spec > $O/base-excl-req.spec
-	bin/debootstrap.py $(FAB_ARCH) $(DEBOOTSTRAP_SUITE) $O/bootstrap `pwd`/$O/repo $O/required.spec $O/base-excl-req.spec
+	bin/debootstrap.py $(FAB_ARCH) $(DEBOOTSTRAP_SUITE) $O/rootfs `pwd`/$O/repo $O/required.spec $O/base-excl-req.spec
 
-	fab-chroot $O/bootstrap --script bin/cleanup.sh
-	fab-chroot $O/bootstrap 'echo "do_initrd = Yes" > /etc/kernel-img.conf'
+	fab-chroot $O/rootfs --script bin/cleanup.sh
+	fab-chroot $O/rootfs 'echo "do_initrd = Yes" > /etc/kernel-img.conf'
 endef
 
-$O/bootstrap: $(bootstrap/deps) $(bootstrap/deps/extra)
-	$(bootstrap/pre)
-	$(bootstrap/body)
-	$(bootstrap/post)
+$O/rootfs: $(rootfs/deps) $(rootfs/deps/extra)
+	$(rootfs/pre)
+	$(rootfs/body)
+	$(rootfs/post)
 
-bootstrap: $O/bootstrap
+rootfs: $O/rootfs
 
-#bootstrap.tar.gz
-bootstrap.tar.gz/deps ?= $(STAMPS_DIR)/bootstrap
-define bootstrap.tar.gz/body
-	tar -C $O/bootstrap -zcf $O/bootstrap.tar.gz .
+#rootfs.tar.gz
+rootfs.tar.gz/deps ?= $(STAMPS_DIR)/rootfs
+define rootfs.tar.gz/body
+	tar -C $O/rootfs -zcf $O/rootfs.tar.gz .
 endef
 
-$O/bootstrap.tar.gz: $(bootstrap.tar.gz/deps) $(bootstrap.tar.gz/deps/extra)
-	$(bootstrap.tar.gz/pre)
-	$(bootstrap.tar.gz/body)
-	$(bootstrap.tar.gz/post)
+$O/rootfs.tar.gz: $(rootfs.tar.gz/deps) $(rootfs.tar.gz/deps/extra)
+	$(rootfs.tar.gz/pre)
+	$(rootfs.tar.gz/body)
+	$(rootfs.tar.gz/post)
 
-bootstrap.tar.gz: $O/bootstrap.tar.gz
+rootfs.tar.gz: $O/rootfs.tar.gz
 
 # construct target rules
 define _stamped_target
@@ -152,7 +152,7 @@ $(STAMPS_DIR)/$1: $$($1/deps) $$($1/deps/extra)
 	touch $$@
 endef
 
-STAMPED_TARGETS := required.spec base.spec repo bootstrap
+STAMPED_TARGETS := required.spec base.spec repo rootfs
 $(foreach target,$(STAMPED_TARGETS),$(eval $(call _stamped_target,$(target))))
 
 .PHONY: clean $(STAMP_TARGETS)
