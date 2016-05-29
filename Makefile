@@ -28,6 +28,8 @@ DEBOOTSTRAP_SUITE ?= generic
 # build output path
 O ?= build
 
+all: $O/rootfs.tar.gz
+
 help:
 	@echo '=== Configurable variables'
 	@echo 'Resolution order:'
@@ -88,7 +90,6 @@ $O/rootfs: $O/repo
 $O/rootfs.tar.gz: $O/rootfs
 	tar -C $O/rootfs -zcf $O/rootfs.tar.gz .
 
-all: $O/rootfs.tar.gz
 
 .PHONY: all clean help
 
