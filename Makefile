@@ -84,7 +84,6 @@ $O/repo: $O/required.spec $O/base.spec
 $O/rootfs: $O/repo
 	bin/debootstrap.py $(FAB_ARCH) $(DEBOOTSTRAP_SUITE) \
 		$O/rootfs `pwd`/$O/repo $O/required.spec $O/base.spec
-	fab-chroot $O/rootfs --script bin/cleanup.sh
 
 	$(foreach u,$(wildcard unit.d/*), \
 	  [ -d $(u)/overlay ] && fab-apply-overlay $(u)/overlay $O/rootfs; \
