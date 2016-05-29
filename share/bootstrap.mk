@@ -9,9 +9,7 @@
 # option) any later version.
 
 _self = $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
-FAB_SHARE_PATH ?= $(shell dirname $(_self))
-BOOTSTRAP_SHARE_PATH ?= $(FAB_SHARE_PATH)/bootstrap
-BSP = $(BOOTSTRAP_SHARE_PATH)
+BSP = $(shell dirname $(_self))
 
 ifndef FAB_PATH
 $(error FAB_PATH not defined - needed for default paths)
