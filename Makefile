@@ -55,24 +55,30 @@ help:
 	@echo
 	@echo '  clean'
 	@echo '  $(value O)/required.spec'
+	@echo '  $(value O)/required.list'
 	@echo '  $(value O)/base.spec'
+	@echo '  $(value O)/base.list'
 	@echo '  $(value O)/repo'
 	@echo '  $(value O)/rootfs'
 	@echo '  $(value O)/rootfs.tar.gz (default)'
 
 clean:
-	-rm -rf $O/*.spec $O/repo $O/rootfs $O/rootfs.tar.gz
+	-rm -rf $O/*.spec $O/*.list $O/repo $O/rootfs $O/rootfs.tar.gz
 
 $O/required.spec: plan/required
 	fab-plan-resolve --output=$O/required.spec plan/required
 
 $O/base.spec: $O/required.spec plan/base
-	fab-plan-resolve --output=$O/base-full.spec plan/base
-	awk '{print $$1}' $O/base-full.spec |sort > $O/base.tmp
-	awk '{print $$1}' $O/required.spec |sort > $O/required.tmp
-	sdiff --suppress-common-lines $O/base.tmp $O/required.tmp | \
-		awk '{print $$1}' | grep -v '>' > $O/base.spec
-	rm $O/base.tmp $O/required.tmp
+	fab-plan-resolve --output=$O/base.spec plan/base
+
+$O/required.list: $O/required.spec
+	awk '{print $$1}' $O/required.spec |sort > $O/required.list
+
+$O/base.list: $O/required.list $O/base.spec
+	awk '{print $$1}' $O/base.spec |sort > $O/base.list.tmp
+	sdiff --suppress-common-lines $O/base.list.tmp $O/required.list | \
+		awk '{print $$1}' | grep -v '>' > $O/base.list
+	rm $O/base.list.tmp
 
 $O/repo: $O/required.spec $O/base.spec
 	mkdir -p $O/repo/pool/main
@@ -81,9 +87,9 @@ $O/repo: $O/required.spec $O/base.spec
 	repo-index $O/repo $(DEBOOTSTRAP_SUITE) main $(FAB_ARCH)
 	repo-release `pwd`/$O/repo $(DEBOOTSTRAP_SUITE)
 
-$O/rootfs: $O/repo
-	REQUIRED_PACKAGES="$(shell cat $O/required.spec |sed 's/=.*//')" \
-	BASE_PACKAGES="$(shell cat $O/base.spec |sed 's/=.*//')" \
+$O/rootfs: $O/repo $O/required.list $O/base.list
+	REQUIRED_PACKAGES="$(shell cat $O/required.list |sed 's/=.*//')" \
+	BASE_PACKAGES="$(shell cat $O/base.list |sed 's/=.*//')" \
 	debootstrap --arch $(FAB_ARCH) $(DEBOOTSTRAP_SUITE) \
 		$O/rootfs file://$(shell pwd)/$O/repo
 
