@@ -82,8 +82,10 @@ $O/repo: $O/required.spec $O/base.spec
 	repo-release `pwd`/$O/repo $(DEBOOTSTRAP_SUITE)
 
 $O/rootfs: $O/repo
-	bin/debootstrap.py $(FAB_ARCH) $(DEBOOTSTRAP_SUITE) \
-		$O/rootfs `pwd`/$O/repo $O/required.spec $O/base.spec
+	REQUIRED_PACKAGES="$(shell cat $O/required.spec |sed 's/=.*//')" \
+	BASE_PACKAGES="$(shell cat $O/base.spec |sed 's/=.*//')" \
+	debootstrap --arch $(FAB_ARCH) $(DEBOOTSTRAP_SUITE) \
+		$O/rootfs file://$(shell pwd)/$O/repo
 
 	$(foreach u,$(wildcard unit.d/*), \
 	  [ -d $(u)/overlay ] && fab-apply-overlay $(u)/overlay $O/rootfs; \
