@@ -1,0 +1,16 @@
+#!/bin/bash -e
+
+CODENAME=$(awk -F"[)(]+" '/VERSION=/ {print $2}' /etc/os-release)
+
+cat >/etc/apt/sources.list.d/sources.list<<EOF
+deb http://http.debian.net/debian $CODENAME main
+# deb http://http.debian.net/debian $CODENAME contrib
+# deb http://http.debian.net/debian $CODENAME non-free
+EOF
+
+cat >/etc/apt/sources.list.d/security.sources.list<<EOF
+deb http://security.debian.org/ $CODENAME/updates main
+# deb http://security.debian.org/ $CODENAME/updates contrib
+# deb http://security.debian.org/ $CODENAME/updates non-free
+EOF
+
