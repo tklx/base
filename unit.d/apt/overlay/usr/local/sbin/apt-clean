@@ -1,0 +1,13 @@
+#!/bin/bash -e
+
+rm -f /var/log/dpkg.log
+rm -f /var/log/apt/*
+
+rm -f /var/cache/apt/*.bin
+rm -f /var/cache/apt/archives/*.deb
+rm -f /var/cache/apt/archives/partial/*.deb
+rm -f /var/cache/debconf/*-old
+
+rm -rf /var/lib/apt/lists/*
+mkdir -p /var/lib/apt/lists/partial
+
