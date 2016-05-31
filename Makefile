@@ -99,7 +99,7 @@ $O/rootfs: $O/repo $O/required.list $O/base.list
 	  )
 
 $O/rootfs.tar.gz: $O/rootfs
-	tar -C $O/rootfs -zcf $O/rootfs.tar.gz .
+	tar -C $O/rootfs --numeric-owner -zcf $O/rootfs.tar.gz .
 
 
 .PHONY: all clean help
