@@ -14,3 +14,6 @@ deb http://security.debian.org/ $CODENAME/updates main
 # deb http://security.debian.org/ $CODENAME/updates non-free
 EOF
 
+# aggresively clean apt related files
+/usr/local/sbin/apt-clean
+

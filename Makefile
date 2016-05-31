@@ -98,6 +98,11 @@ $O/rootfs: $O/repo $O/required.list $O/base.list
 	  [ -x $(u)/conf ] && fab-chroot $O/rootfs --script $(u)/conf; \
 	  )
 
+	rm -f $O/rootfs/etc/hostname
+	rm -f $O/rootfs/etc/resolv.conf
+	rm -f $O/rootfs/etc/apt/sources.list
+	rm -f $O/rootfs/var/log/bootstrap.log
+
 $O/rootfs.tar.gz: $O/rootfs
 	tar -C $O/rootfs --numeric-owner -zcf $O/rootfs.tar.gz .
 

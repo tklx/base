@@ -1,11 +1,6 @@
 #!/bin/bash -e
 
-rm -f /etc/hostname
-rm -f /etc/resolv.conf
-rm -f /etc/apt/sources.list
-rm -f /var/log/bootstrap.log
-
-# remove documentation (ref: unit.d/apt/overlay/etc/dpkg/dpkg.cfg.d/01_doc)
+# remove documentation (ref: overlay/etc/dpkg/dpkg.cfg.d/01_doc)
 find /usr/share/doc -depth -type f ! -name copyright | xargs rm || true
 find /usr/share/doc -empty | xargs rmdir || true
 rm -rf /var/cache/man/*
@@ -15,9 +10,6 @@ rm -rf /usr/share/groff/*
 rm -rf /usr/share/linda/*
 rm -rf /usr/share/lintian/*
 
-# remove locales (ref: unit.d/apt/overlay/etc/dpkg/dpkg.cfg.d/02_locale)
+# remove locales (ref: overlay/etc/dpkg/dpkg.cfg.d/01_locale)
 find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en*' | xargs rm -r
-
-# aggresively clean apt related files
-/usr/local/sbin/apt-clean
 
