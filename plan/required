@@ -38,17 +38,13 @@ grep
 gzip                 
 hostname             
 login
-mktemp
 mount
-ncurses-base
-ncurses-bin
 perl-base
 tar
 util-linux
 sed
 libc-bin
 
-/* non-essential packages needed for for bootstrapping */
+/* non-essential packages needed for bootstrapping */
 mawk            /* needed to provide awk to base-files */
-initscripts     /* needed to provide upstart / sysvinit */
 sysv-rc         /* needed by dpkg for update-rc.d */
