@@ -1,0 +1,5 @@
+# source: https://wiki.ubuntu.com/ReducingDiskFootprint
+
+path-exclude /usr/share/locale/*
+path-include /usr/share/locale/en*
+
