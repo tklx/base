@@ -6,9 +6,7 @@ extra dependencies they require.
 We resolve the dependencies of the included packages recursively to
 produce a list of packages which are passed to debootstrap to produce a
 bootstrap filesystem capable of installing additional packages via
-fab-install. 
-
-No more (e.g., a fully bootable system), and no less.
+apt-get.
 
 Notes:
 
@@ -17,12 +15,8 @@ Notes:
 * Avoid including "essential" packages which are not really essential
   for satisfying our goal.
 
-  (e.g., they have swappable alternatives, or are not standard
-  across Debian-based distributions)
-
 */
 
-/* essential packages common to Debian and Ubuntu */
 base-files
 base-passwd
 bash                 
