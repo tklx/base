@@ -3,6 +3,7 @@
 rm -f /etc/hostname
 rm -f /etc/resolv.conf
 rm -f /etc/apt/sources.list
+rm -f /var/log/bootstrap.log
 
 /usr/local/sbin/apt-clean
 
