@@ -1,7 +1,28 @@
 #!/bin/bash -e
 
-rm -f /var/log/dpkg.log
+usage() {
+cat<<EOF
+Syntax: $(basename $0) [ -options ]
+Convenience script to clean APT cache and optionally package docs/locales
+
+Options::
+
+    -a -aggressive      delete package docs and locales
+
+EOF
+exit 1
+}
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -a|--aggressive) aggressive="yes";;
+        *)               usage;;
+    esac
+    shift
+done
+
 rm -f /var/log/apt/*
+rm -f /var/log/dpkg.log
 rm -f /var/cache/apt/*.bin
 rm -f /var/cache/apt/archives/*.deb
 rm -f /var/cache/apt/archives/partial/*.deb
@@ -9,17 +30,20 @@ rm -f /var/cache/debconf/*-old
 rm -rf /var/lib/apt/lists/*
 mkdir -p /var/lib/apt/lists/partial
 
-find /usr/share/locale -mindepth 1 -maxdepth 1 \
-    ! -name "en*" ! -name "locale.alias" | xargs rm -r || true
+if [ "$aggressive" == "yes" ]; then
 
-find /usr/share/doc -depth -type f ! -name copyright | xargs rm || true
-find /usr/share/doc -empty | xargs rmdir || true
+    find /usr/share/locale -mindepth 1 -maxdepth 1 \
+        ! -name "en*" ! -name "locale.alias" | xargs rm -r || true
 
-rm -rf /var/cache/man/*
-rm -rf /usr/share/man/*
-rm -rf /usr/share/info/*
-rm -rf /usr/share/groff/*
-rm -rf /usr/share/linda/*
-rm -rf /usr/share/lintian/*
+    find /usr/share/doc -depth -type f ! -name copyright | xargs rm || true
+    find /usr/share/doc -empty | xargs rmdir || true
+
+    rm -rf /var/cache/man/*
+    rm -rf /usr/share/man/*
+    rm -rf /usr/share/info/*
+    rm -rf /usr/share/groff/*
+    rm -rf /usr/share/linda/*
+    rm -rf /usr/share/lintian/*
+fi
 
 exit 0

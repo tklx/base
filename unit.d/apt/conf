@@ -23,5 +23,5 @@ dpkg-divert --local --rename --add /sbin/initctl
 ln -sf /bin/true /sbin/initctl
 
 # aggresively clean apt related files
-/usr/local/sbin/apt-clean
+/usr/local/sbin/apt-clean --aggressive
 
