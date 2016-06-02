@@ -18,5 +18,6 @@ rm -rf /usr/share/linda/*
 rm -rf /usr/share/lintian/*
 
 # remove locales (ref: overlay/etc/dpkg/dpkg.cfg.d/01_locale)
-find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en*' | xargs rm -r
+find /usr/share/locale -mindepth 1 -maxdepth 1 \
+    ! -name 'en*' ! -name 'locale.alias' | xargs rm -r || true
 
