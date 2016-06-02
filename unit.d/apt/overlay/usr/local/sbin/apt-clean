@@ -9,6 +9,10 @@ Options::
 
     -a -aggressive      delete package docs and locales
 
+Environment::
+
+    LANG                exclude from locales deletion (default: en_US)
+
 EOF
 exit 1
 }
@@ -32,8 +36,11 @@ mkdir -p /var/lib/apt/lists/partial
 
 if [ "$aggressive" == "yes" ]; then
 
+    [ "$LANG" ] || LANG=en_US
+    locale_excl=$(echo $LANG | cut -d_ -f1)
+
     find /usr/share/locale -mindepth 1 -maxdepth 1 \
-        ! -name "en*" ! -name "locale.alias" | xargs rm -r || true
+        ! -name "${locale_excl}*" ! -name "locale.alias" | xargs rm -r || true
 
     find /usr/share/doc -depth -type f ! -name copyright | xargs rm || true
     find /usr/share/doc -empty | xargs rmdir || true
