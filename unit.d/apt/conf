@@ -14,6 +14,14 @@ deb http://security.debian.org/ $CODENAME/updates main
 # deb http://security.debian.org/ $CODENAME/updates non-free
 EOF
 
+
+# prevent initscript from running during install/update
+echo "exit 101" > /usr/sbin/policy-rc.d
+chmod +x /usr/sbin/policy-rc.d
+
+dpkg-divert --local --rename --add /sbin/initctl
+ln -sf /bin/true /sbin/initctl
+
 # aggresively clean apt related files
 /usr/local/sbin/apt-clean
 
