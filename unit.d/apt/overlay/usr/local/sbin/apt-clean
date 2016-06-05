@@ -7,7 +7,7 @@ Convenience script to clean APT cache and optionally package docs/locales
 
 Options::
 
-    -a -aggressive      delete package docs and locales
+    -a --aggressive     delete package docs and locales
 
 Environment::
 
