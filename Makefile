@@ -28,7 +28,7 @@ DEBOOTSTRAP_SUITE ?= generic
 # build output path
 O ?= build
 
-all: $O/rootfs.tar.gz
+default: $O/rootfs.tar.gz
 
 help:
 	@echo '=== Configurable variables'
@@ -60,10 +60,11 @@ help:
 	@echo '  $(value O)/base.list'
 	@echo '  $(value O)/repo'
 	@echo '  $(value O)/rootfs'
+	@echo '  $(value O)/rootfs.tar.xz'
 	@echo '  $(value O)/rootfs.tar.gz (default)'
 
 clean:
-	-rm -rf $O/*.spec $O/*.list $O/repo $O/rootfs $O/rootfs.tar.gz
+	-rm -rf $O/*.spec $O/*.list $O/repo $O/rootfs $O/rootfs.tar.*
 
 $O/required.spec: plan/required
 	fab-plan-resolve --output=$O/required.spec plan/required
@@ -106,6 +107,8 @@ $O/rootfs: $O/repo $O/required.list $O/base.list
 $O/rootfs.tar.gz: $O/rootfs
 	tar -C $O/rootfs --numeric-owner -zcf $O/rootfs.tar.gz .
 
+$O/rootfs.tar.xz: $O/rootfs
+	tar -C $O/rootfs --numeric-owner -Jcf $O/rootfs.tar.xz .
 
 .PHONY: all clean help
 
