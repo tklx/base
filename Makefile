@@ -30,6 +30,8 @@ O ?= build
 
 default: $O/rootfs.tar.gz
 
+all: default $O/rootfs.tar.xz $O/manifest
+
 help:
 	@echo '=== Configurable variables'
 	@echo 'Resolution order:'
@@ -53,18 +55,20 @@ help:
 	@echo 'Build a target'
 	@echo '$$ make [target] [O=path/to/build/dir]'
 	@echo
+	@echo '  all'
 	@echo '  clean'
 	@echo '  $(value O)/required.spec'
 	@echo '  $(value O)/required.list'
 	@echo '  $(value O)/base.spec'
 	@echo '  $(value O)/base.list'
 	@echo '  $(value O)/repo'
+	@echo '  $(value O)/manifest'
 	@echo '  $(value O)/rootfs'
 	@echo '  $(value O)/rootfs.tar.xz'
 	@echo '  $(value O)/rootfs.tar.gz (default)'
 
 clean:
-	-rm -rf $O/*.spec $O/*.list $O/repo $O/rootfs $O/rootfs.tar.*
+	-rm -rf $O/*.spec $O/*.list $O/manifest $O/repo $O/rootfs*
 
 $O/required.spec: plan/required
 	fab-plan-resolve --output=$O/required.spec plan/required
@@ -80,6 +84,9 @@ $O/base.list: $O/required.list $O/base.spec
 	sdiff --suppress-common-lines $O/base.list.tmp $O/required.list | \
 		awk '{print $$1}' | grep -v '>' > $O/base.list
 	rm $O/base.list.tmp
+
+$O/manifest: $O/required.list $O/base.list
+	cat $O/required.list $O/base.list | sort | sed "s/=/ /" > $O/manifest
 
 $O/repo: $O/required.spec $O/base.spec
 	mkdir -p $O/repo/pool/main
@@ -110,5 +117,5 @@ $O/rootfs.tar.gz: $O/rootfs
 $O/rootfs.tar.xz: $O/rootfs
 	tar -C $O/rootfs --numeric-owner -Jcf $O/rootfs.tar.xz .
 
-.PHONY: all clean help
+.PHONY: all clean default help
 
