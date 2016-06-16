@@ -40,10 +40,10 @@ if [ "$aggressive" == "yes" ]; then
     locale_excl=$(echo $LANG | cut -d_ -f1)
 
     find /usr/share/locale -mindepth 1 -maxdepth 1 \
-        ! -name "${locale_excl}*" ! -name "locale.alias" | xargs rm -r || true
+        ! -name "${locale_excl}*" ! -name "locale.alias" | xargs rm -rf || true
 
-    find /usr/share/doc -depth -type f ! -name copyright | xargs rm || true
-    find /usr/share/doc -empty | xargs rmdir || true
+    find /usr/share/doc -depth -type f ! -name copyright | xargs rm -f || true
+    find /usr/share/doc -empty | xargs rm -rf || true
 
     rm -rf /var/cache/man/*
     rm -rf /usr/share/man/*
