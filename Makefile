@@ -12,11 +12,7 @@ ifndef FAB_PATH
 $(error FAB_PATH not defined - needed for default paths)
 endif
 
-ifndef RELEASE
-$(error RELEASE not defined)
-endif
-
-DISTRO = $(shell dirname $(RELEASE))
+RELEASE = debian/jessie
 CODENAME = $(shell basename $(RELEASE))
 
 POOL ?= $(FAB_PATH)/pools/$(CODENAME)
@@ -40,10 +36,10 @@ help:
 	@echo '3) built-in default (lowest precedence)'
 	@echo
 	@echo '# Mandatory configuration variables'
-	@echo '  RELEASE                    $(value RELEASE)'
 	@echo '  FAB_PATH                   $(value FAB_PATH)'
 	@echo
 	@echo '# Build context variables'
+	@echo '  RELEASE                    $(value RELEASE)'
 	@echo '  POOL                       $(value POOL)'
 	@echo '  FAB_ARCH                   $(value FAB_ARCH)'
 	@echo '  DEBOOTSTRAP_SUITE          $(value DEBOOTSTRAP_SUITE)'
