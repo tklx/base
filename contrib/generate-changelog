@@ -1,0 +1,58 @@
+#!/bin/bash -e
+
+fatal() { echo "fatal [$(basename $0)]: $@" 1>&2; exit 1; }
+
+usage() {
+cat<<EOF
+Syntax: $0
+Convenience script to output updated CHANGELOG.md for manual editing
+
+Notes::
+    
+    - auto-increments major.minor.PATCH from latest git tag (or 0.1.0)
+    - includes short git log of changes since latest git tag (or all)
+    - includes diff releases/\$latest_tag/package.list and build/package.list
+
+EOF
+exit 1
+}
+
+increment_version() {
+    version=$1
+    last_char=${version#${version%?}}
+    echo $version | sed 's/[0-9]$/'"$((last_char+1))"'/'
+}
+
+get_log() {
+    since=$1
+    [ "$since" ] && between=$since..HEAD
+    git --no-pager log $between --reverse --pretty=format:'- %s'
+}
+
+diff_package_list() {
+    version=$1
+    diff releases/$version/package.list build/package.list
+}
+
+[[ "$#" = "0" ]] || usage
+[ -e build/package.list ] || fatal "build/package.list does not exist"
+
+latest=$(git tag -l | head -1)
+gitlog=$(get_log $latest)
+[ "$latest" ] && version=$(increment_version $latest)
+[ "$latest" ] && package_list_diff=$(diff_package_list $latest)
+
+echo -e "## ${version:-0.1.0}\n"
+echo -e "<replace with high level summary>\n"
+echo -e "#### New features\n"
+echo -e "#### Bugfixes\n"
+echo "${gitlog}" | grep fix && echo || true
+echo -e "#### Other changes\n"
+echo "${gitlog}" | grep -v fix && echo || true
+if [ "$package_list_diff" ]; then
+    echo -e "#### Package updates\n"
+    echo -e "${package_list_diff}\n"
+fi
+[ -e CHANGELOG.md ] && cat CHANGELOG.md
+
+exit 0
