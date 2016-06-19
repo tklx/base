@@ -16,6 +16,19 @@ over [56,800 packages][debian_packages].
 - Comfortable [interactive][bashrc] terminal (colorized, promptpath).
 - Convenience [apt-clean][apt-clean] script to clean cache and optionally docs/locales.
 
+## Usage (Docker)
+
+```console
+docker pull tklx/base:0.1.0
+docker run -it tklx/base:0.1.0 /bin/bash
+```
+
+```dockerfile
+FROM tklx/base:0.1.0
+RUN apt-get update && apt-get -y install PACKAGES && apt-clean
+ENTRYPOINT ["something"]
+```
+
 ## Status
 
 Currently on major version zero (0.y.z). Per [Semantic Versioning][semver],
