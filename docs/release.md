@@ -20,12 +20,20 @@ gpg -u A16EB94D --armor --detach-sig releases/$VERSION/rootfs.tar.xz
 ln -sf $VERSION releases/latest
 ```
 
-## push to github and create new release
+## push to github
 
-- git push github --tags
+```
+git push github
+git push github --tags
+```
 
-- create new release
+## create new github release
 
-    - use CHANGELOG.md as basis for release notes
-    - upload files in releases/$VERSION
+- https://github.com/tklx/base/releases/new
+- select $VERSION tag
+- set description as $VERSION
+- copy/paste entry from CHANGELOG.md and tweak
+- add release files from releases/$VERSION/
+- mark pre-release if relevant
+- publish
 
