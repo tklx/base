@@ -25,7 +25,7 @@ docker run -it tklx/base:0.1.0 /bin/bash
 
 ```dockerfile
 FROM tklx/base:0.1.0
-RUN apt-get update && apt-get -y install PACKAGES && apt-clean
+RUN apt-get update && apt-get -y install PACKAGES && apt-clean --aggressive
 ENTRYPOINT ["something"]
 ```
 
