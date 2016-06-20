@@ -47,6 +47,11 @@ based on the following:
 - ``MINOR``: backwards-compatible new features and functionality
 - ``PATCH``: backwards-compatible bugfixes and package updates
 
+## Issue Tracker
+
+TKLX uses a central [issue tracker][tracker] on GitHub for reporting and
+tracking of bugs, issues and feature requests.
+
 ## About
 
 In case you're interested, TKLX is pronounced _/tickle-ex/_.
@@ -72,6 +77,7 @@ society.
 [apt-clean]: https://github.com/tklx/base/blob/master/unit.d/apt/overlay/usr/local/sbin/apt-clean
 [semver]: http://semver.org/
 [releases]: https://github.com/tklx/base/releases
+[tracker]: https://github.com/tklx/tracker/issues
 [turnkeylinux]: https://www.turnkeylinux.org
 [alonswartz]: http://www.alonswartz.org
 [lirazsiri]: http://www.liraz.org
