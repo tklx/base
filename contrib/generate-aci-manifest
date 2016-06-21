@@ -1,0 +1,29 @@
+#!/bin/bash -e
+
+usage() {
+    echo "Syntax: $0 name version arch"
+    echo "Generate manifest to be included in aci"
+    exit 1
+}
+
+[[ "$#" = "3" ]] || usage
+
+name=$1
+version=$2
+arch=$3
+
+cat<<EOF
+{
+  "acKind": "ImageManifest",
+  "acVersion": "0.8.4",
+  "name": "$name",
+  "labels": [
+    {"name": "version", "value": "$version"},
+    {"name": "os", "value": "linux"},
+    {"name": "arch", "value": "$arch"}
+  ],
+  "annotations": [
+    {"name": "created", "value": "$(date --rfc-3339=ns | tr ' ' 'T')"}
+  ]
+}
+EOF

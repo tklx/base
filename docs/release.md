@@ -19,6 +19,16 @@ mkdir releases/$VERSION
 cp build/package.list releases/$VERSION/
 cp build/rootfs.tar.xz releases/$VERSION/
 gpg -u A16EB94D --armor --detach-sig releases/$VERSION/rootfs.tar.xz
+
+ARCH=$(dpkg --print-architecture)
+NAME=base-$VERSION-linux-$ARCH.aci
+contrib/generate-aci-manifest tklx.org/base $VERSION $ARCH > build/manifest
+cat build/manifest | python -m json.tool >/dev/null
+sudo chown root:root build/manifest
+sudo tar -C build --numeric-owner -Jcf releases/$VERSION/$NAME manifest rootfs
+sudo rm build/manifest
+sudo chown $USER:$USER releases/$VERSION/$NAME
+gpg -u A16EB94D --armor --detach-sig releases/$VERSION/$NAME
 ```
 
 ## push to github
