@@ -29,6 +29,24 @@ RUN apt-get update && apt-get -y install PACKAGES && apt-clean --aggressive
 ENTRYPOINT ["something"]
 ```
 
+## Usage (CoreOS rkt)
+
+```console
+rkt trust --prefix=tklx.org/base
+rkt fetch tklx.org/base:0.1.0
+rkt run tklx.org/base:0.1.0 --interactive --exec /bin/bash
+```
+
+```console
+acbuild begin
+acbuild set-name example.com/test
+acbuild dep add tklx.org/base:0.1.0
+acbuild run apt-get update && apt-get -y install PACKAGES && apt-clean --aggressive
+acbuild set-exec something
+acbuild write test-latest-linux-amd64.aci
+acbuild end
+```
+
 ## Status
 
 Currently on major version zero (0.y.z). Per [Semantic Versioning][semver],
