@@ -8,7 +8,7 @@ shopt -s histappend
 
 # max 2 level - best compromise of readability and usefulness
 function promptpath() {
-    path="${PWD/#$HOME/~}"
+    path="${PWD/#$HOME/\~}"
     if [ $(echo "${path:1}" | tr -d -c / | wc -c) -gt 1 ]; then
         path=$(echo "$path" | rev | cut -d/ -f-2 | rev)
     fi
