@@ -102,6 +102,7 @@ $O/rootfs: $O/repo $O/required.list $O/base.list
 		file://$(shell realpath $O)/repo
 
 	mkdir -p $O/rootfs/dev/pts
+	echo $(CODENAME) > $O/rootfs/etc/debian_codename
 	$(foreach u,$(wildcard unit.d/*), \
 	  [ -d $(u)/overlay ] && fab-apply-overlay $(u)/overlay $O/rootfs; \
 	  [ -x $(u)/conf ] && fab-chroot $O/rootfs --script $(u)/conf; \

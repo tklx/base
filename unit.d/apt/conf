@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-CODENAME=$(awk -F"[)(]+" '/VERSION=/ {print $2}' /etc/os-release)
+CODENAME=$(cat /etc/debian_codename)
 
 cat >/etc/apt/sources.list.d/sources.list<<EOF
 deb http://httpredir.debian.org/debian $CODENAME main
