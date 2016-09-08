@@ -101,6 +101,7 @@ $O/rootfs: $O/repo $O/required.list $O/base.list
 		$(shell realpath $O)/rootfs \
 		file://$(shell realpath $O)/repo
 
+	mkdir -p $O/rootfs/dev/pts
 	$(foreach u,$(wildcard unit.d/*), \
 	  [ -d $(u)/overlay ] && fab-apply-overlay $(u)/overlay $O/rootfs; \
 	  [ -x $(u)/conf ] && fab-chroot $O/rootfs --script $(u)/conf; \
