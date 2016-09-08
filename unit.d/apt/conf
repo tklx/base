@@ -8,12 +8,13 @@ deb http://httpredir.debian.org/debian $CODENAME main
 # deb http://httpredir.debian.org/debian $CODENAME non-free
 EOF
 
+if [ "$CODENAME" != "sid" ]; then
 cat >/etc/apt/sources.list.d/security.sources.list<<EOF
 deb http://security.debian.org/ $CODENAME/updates main
 # deb http://security.debian.org/ $CODENAME/updates contrib
 # deb http://security.debian.org/ $CODENAME/updates non-free
 EOF
-
+fi
 
 # prevent initscript from running during install/update
 echo "exit 101" > /usr/sbin/policy-rc.d
