@@ -12,7 +12,10 @@ ifndef FAB_PATH
 $(error FAB_PATH not defined - needed for default paths)
 endif
 
-RELEASE = debian/jessie
+ifndef RELEASE
+$(error RELEASE not defined - needed for default paths)
+endif
+
 CODENAME = $(shell basename $(RELEASE))
 
 POOL ?= $(FAB_PATH)/pools/$(CODENAME)
