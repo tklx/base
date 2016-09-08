@@ -95,7 +95,8 @@ $O/rootfs: $O/repo $O/required.list $O/base.list
 	REQUIRED_PACKAGES="$(shell cat $O/required.list |sed 's/=.*//')" \
 	BASE_PACKAGES="$(shell cat $O/base.list |sed 's/=.*//')" \
 	debootstrap --arch $(FAB_ARCH) $(DEBOOTSTRAP_SUITE) \
-		$O/rootfs file://$(shell pwd)/$O/repo
+		$(shell realpath $O)/rootfs \
+		file://$(shell realpath $O)/repo
 
 	$(foreach u,$(wildcard unit.d/*), \
 	  [ -d $(u)/overlay ] && fab-apply-overlay $(u)/overlay $O/rootfs; \
