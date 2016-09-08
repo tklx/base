@@ -10,3 +10,4 @@ RUN set -x \
     && rm -rf /tmp/debs \
     && apt-clean --aggressive
 
+COPY debootstrap/generic /usr/share/debootstrap/scripts/generic
