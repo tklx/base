@@ -1,0 +1,20 @@
+#!/bin/bash -e
+
+fatal() { echo "fatal: $@" 1>&2; exit 1; }
+warn() { echo "warning: $@" 1>&2; }
+
+[ $FAB_PATH ] || fatal "FAB_PATH not set in environment"
+[ $RELEASE ] || fatal "RELEASE not set in environment"
+
+if [ -d "$PKGCACHE" ]; then
+    export POOL_DIR=$FAB_PATH/pools/$(basename $RELEASE)
+    mkdir -p $POOL_DIR/buildroot
+    pool-init $POOL_DIR/buildroot
+    pool-register $PKGCACHE
+    unset POOL_DIR
+else
+    warn "PKGCACHE not set in environment or does not exist"
+    warn "skipping pool setup"
+fi
+ 
+exec $@

@@ -1,3 +1,4 @@
 *
 !debs
 !debootstrap
+!entrypoint

@@ -11,3 +11,9 @@ RUN set -x \
     && apt-clean --aggressive
 
 COPY debootstrap/generic /usr/share/debootstrap/scripts/generic
+COPY entrypoint /entrypoint
+
+ENV FAB_PATH=/turnkey/fab
+ENTRYPOINT ["/entrypoint"]
+CMD ["/bin/bash"]
+
