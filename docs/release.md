@@ -1,3 +1,15 @@
+## build and test
+
+```
+export RELEASE=debian/jessie
+builder/run chanko-upgrade
+builder/run make clean
+builder/run make all
+
+docker build -t tklx/base:latest .
+docker run -it --rm tklx/base:latest /bin/bash
+```
+
 ## update changelog, readme and create signed tag
 
 ```
@@ -47,4 +59,14 @@ git push github --tags
 - add release files from releases/$VERSION/
 - mark pre-release if relevant
 - publish
+
+## update docker hub
+
+```
+docker tag tklx/base:latest tklx/base:$VERSION
+docker push tklx/base:$VERSION
+```
+
+- https://hub.docker.com/r/tklx/base/
+- update description based on README.md
 
