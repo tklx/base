@@ -31,7 +31,8 @@ get_log() {
 
 diff_package_list() {
     version=$1
-    diff releases/$version/package.list build/package.list
+    diff --side-by-side --suppress-common-lines --width=75 \
+        releases/0.1.0/package.list build/package.list || true
 }
 
 [[ "$#" = "0" ]] || usage
@@ -51,7 +52,7 @@ echo -e "#### Other changes\n"
 echo "${gitlog}" | grep -v fix && echo || true
 if [ "$package_list_diff" ]; then
     echo -e "#### Package updates\n"
-    echo -e "${package_list_diff}\n"
+    echo -e "\`\`\`\n${package_list_diff}\n\`\`\`\n"
 fi
 [ -e CHANGELOG.md ] && cat CHANGELOG.md
 
