@@ -19,12 +19,12 @@ over [56,800 packages][debian_packages].
 ## Usage (Docker)
 
 ```console
-docker pull tklx/base:0.1.0
-docker run -it tklx/base:0.1.0 /bin/bash
+docker pull tklx/base:0.1.1
+docker run -it tklx/base:0.1.1 /bin/bash
 ```
 
 ```dockerfile
-FROM tklx/base:0.1.0
+FROM tklx/base:0.1.1
 RUN apt-get update && apt-get -y install PACKAGES && apt-clean --aggressive
 ENTRYPOINT ["something"]
 ```
@@ -33,14 +33,14 @@ ENTRYPOINT ["something"]
 
 ```console
 rkt trust --prefix=tklx.org/base
-rkt fetch tklx.org/base:0.1.0
-rkt run tklx.org/base:0.1.0 --interactive --exec /bin/bash
+rkt fetch tklx.org/base:0.1.1
+rkt run tklx.org/base:0.1.1 --interactive --exec /bin/bash
 ```
 
 ```console
 acbuild begin
 acbuild set-name example.com/test
-acbuild dep add tklx.org/base:0.1.0
+acbuild dep add tklx.org/base:0.1.1
 acbuild run apt-get update && apt-get -y install PACKAGES && apt-clean --aggressive
 acbuild set-exec something
 acbuild write test-latest-linux-amd64.aci
